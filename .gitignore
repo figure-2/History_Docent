@@ -1,0 +1,96 @@
+# Dependencies
+node_modules/
+venv/ 
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Next.js
+.next/
+out/
+build/
+dist/
+.turbo/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Python
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Model files (if too large)
+*.bin
+*.safetensors
+*.pt
+*.pth
+models/
+checkpoints/
+
+# Data files (if too large)
+*.parquet
+*.h5
+*.hdf5
+
+# --- Project Specific Large Files ---
+# Original PDFs
+01_backend/00_PDF_history/*.pdf
+
+# Preprocessing Data (Images & PDFs)
+01_backend/01_Data_Preprocessing/**/*.png
+01_backend/01_Data_Preprocessing/**/*.pdf
+01_backend/01_Data_Preprocessing/**/*.pkl
+01_backend/01_Data_Preprocessing/**/data/
+
+# Embedding & Vector DB
+01_backend/03_Embedding/output/
+01_backend/04_VectorDB/chroma_db/
+
+# Evaluation Results & Logs
+01_backend/06_LLM_Evaluation/results/
+01_backend/06_LLM_Evaluation/*.out
+
+# Large JSONs (Embedding vectors)
+chunks_with_embeddings.json
+01_backend/03_Embedding/output/chunks_with_embeddings*.json
+
