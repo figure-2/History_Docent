@@ -1,0 +1,17 @@
+{
+  "started_at": "2025-11-23T02:54:07.325913",
+  "api_key_num": 6,
+  "assigned_range": "2320~2783",
+  "total_chunks": 3719,
+  "assigned_chunks": 464,
+  "processed_chunks": 216,
+  "remaining_chunks": 460,
+  "total_saved": 1379,
+  "by_type": {
+    "keyword": 460,
+    "context": 460,
+    "abstract": 459
+  },
+  "completed_at": "2025-11-23T04:49:09.162718",
+  "final_saved": 1379
+}

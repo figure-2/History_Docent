@@ -1,0 +1,12 @@
+{
+  "started_at": "2025-11-22T18:29:47.620623",
+  "total_chunks": 3719,
+  "processed_chunks": 0,
+  "remaining_chunks": 3719,
+  "total_saved": 408,
+  "by_type": {
+    "keyword": 136,
+    "context": 136,
+    "abstract": 136
+  }
+}

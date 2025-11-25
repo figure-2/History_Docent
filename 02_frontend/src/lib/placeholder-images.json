@@ -1,0 +1,46 @@
+{
+  "placeholderImages": [
+    {
+      "id": "king-sejong",
+      "description": "Portrait of a Korean King, Sejong the Great",
+      "imageUrl": "/images/세종대왕.png",
+      "imageHint": "korean king sejong"
+    },
+    {
+      "id": "yi-sun-sin",
+      "description": "A portrait of Admiral Yi Sun-sin",
+      "imageUrl": "/images/이순신.png",
+      "imageHint": "korean admiral portrait"
+    },
+    {
+      "id": "hwang-jini",
+      "description": "A Korean gisaeng, Hwang Jini, in a hanbok",
+      "imageUrl": "/images/황진이.png",
+      "imageHint": "korean artist portrait"
+    },
+    {
+      "id": "jang-geum",
+      "description": "A Korean female royal chef, Jang Geum",
+      "imageUrl": "/images/장금이.png",
+      "imageHint": "korean chef"
+    },
+    {
+      "id": "choraengi",
+      "description": "A witty and humorous character from the Joseon Dynasty",
+      "imageUrl": "/images/초랭이.png",
+      "imageHint": "joseon dynasty jester"
+    },
+    {
+      "id": "shin-saimdang",
+      "description": "A portrait of Shin Saimdang, a wise mother and artist",
+      "imageUrl": "/images/신사임당.png",
+      "imageHint": "korean artist mother"
+    },
+    {
+      "id": "history-guide",
+      "description": "A knowledgeable Korean history guide.",
+      "imageUrl": "/images/역사_가이드_1.png",
+      "imageHint": "art historian"
+    }
+  ]
+}
