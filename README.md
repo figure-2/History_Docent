@@ -33,6 +33,23 @@
 - **하이브리드 검색**: 벡터 검색 + 키워드 검색(BM25) 결합으로 검색 정확도 향상
 - **실시간 질의응답**: FastAPI 기반 RESTful API로 빠른 응답 제공
 
+## API 엔드포인트 (Backend)
+
+> 구현 위치: `01_backend/main.py`
+
+- `GET /health`: 서버 상태/초기화 여부 확인
+- `POST /api/query`: 질의응답
+  - Request 예시:
+    ```json
+    { "question": "세종대왕의 업적은?", "language": "ko" }
+    ```
+  - Response: `answer`, `sources`, `latency`
+
+## 저장소 구조 (요약)
+
+- `01_backend/`: FastAPI + RAG 파이프라인(전처리/청킹/임베딩/VectorDB/평가 포함)
+- `02_frontend/`: Firebase Studio 기반 Next.js 스캐폴드(프로젝트 구성 파일은 환경에 맞게 보완 필요)
+
 ---
 
 ## 기술 스택
@@ -240,11 +257,11 @@ curl -X POST http://localhost:8000/api/query \
 
 | Decision Step | Candidates | Selected | Key Result (Reason) | Report |
 |:---:|:---|:---:|:---|:---:|
-| **1. Chunking** | Recursive vs Structure-Aware | **Hybrid Chunking** | 문맥 보존 + 길이 제어 (최대 1,063자) | [View](./docs/experiments/01_Chunking_Strategy.md) |
-| **2. Embedding** | BGE-m3, Ko-SBERT, E5 등 7개 | **BGE-m3** | **MRR 0.489** (1위), 모든 질문 유형에서 우수 | [View](./docs/experiments/02_Embedding_Benchmark.md) |
-| **3. Retrieval** | Vector vs BM25 vs Hybrid | **Hybrid Weighted** | **MRR 0.711**, Recall@1 0.632 (Vector 대비 +9.7%p) | [View](./docs/experiments/03_Retrieval_Benchmark.md) |
-| **4. Reranking** | BGE-Reranker vs Dongjin-kr | **BM25 Only** | 리랭커 적용 시 성능 향상 없음, 속도만 저하 | [View](./docs/experiments/06_Reranker_Benchmark.md) |
-| **5. LLM** | EXAONE, EEVE, Bllossom 등 | **Bllossom-8B** | 성공률 100%, 평균 지연시간 6.98초 | [View](./docs/experiments/04_LLM_Selection.md) |
+| **1. Chunking** | Recursive vs Structure-Aware | **Hybrid Chunking** | 문맥 보존 + 길이 제어 (최대 1,063자) | [View](./04_docs/experiments/01_Chunking_Strategy.md) |
+| **2. Embedding** | BGE-m3, Ko-SBERT, E5 등 7개 | **BGE-m3** | **MRR 0.489** (1위), 모든 질문 유형에서 우수 | [View](./04_docs/experiments/02_Embedding_Benchmark.md) |
+| **3. Retrieval** | Vector vs BM25 vs Hybrid | **Hybrid Weighted** | **MRR 0.711**, Recall@1 0.632 (Vector 대비 +9.7%p) | [View](./04_docs/experiments/03_Retrieval_Benchmark.md) |
+| **4. Reranking** | BGE-Reranker vs Dongjin-kr | **BM25 Only** | 리랭커 적용 시 성능 향상 없음, 속도만 저하 | [View](./04_docs/experiments/06_Reranker_Benchmark.md) |
+| **5. LLM** | EXAONE, EEVE, Bllossom 등 | **Bllossom-8B** | 성공률 100%, 평균 지연시간 6.98초 | [View](./04_docs/experiments/04_LLM_Selection.md) |
 
 ---
 
@@ -270,7 +287,7 @@ curl -X POST http://localhost:8000/api/query \
 - MRR: 0.663 → **0.711** (Hybrid Weighted, +7.3%p)
 - OKT 적용으로 BM25 성능 **+11.7% 향상**
 
-**상세 리포트**: [검색 전략 벤치마크](./docs/experiments/03_Retrieval_Benchmark.md)
+**상세 리포트**: [검색 전략 벤치마크](./04_docs/experiments/03_Retrieval_Benchmark.md)
 
 ### 2. 청킹 전략 최적화: 하이브리드 청킹
 
@@ -294,7 +311,7 @@ curl -X POST http://localhost:8000/api/query \
 - 평균 길이: 546.8자 → **471.4자** (최적화)
 - 초대형 청크 완전 제거
 
-**상세 리포트**: [청킹 전략 실험](./docs/experiments/01_Chunking_Strategy.md)
+**상세 리포트**: [청킹 전략 실험](./04_docs/experiments/01_Chunking_Strategy.md)
 
 ### 3. LLM 추론 속도 최적화: vLLM 도입
 
@@ -308,7 +325,7 @@ curl -X POST http://localhost:8000/api/query \
 
 **결과**: 추론 속도 약 2-3배 향상
 
-**코드 위치**: `backend/history_docent.py`
+**코드 위치**: `01_backend/history_docent.py`
 
 ### 4. 답변 신뢰성 확보: RAGAS 평가
 
@@ -320,7 +337,7 @@ curl -X POST http://localhost:8000/api/query \
 - Context Precision, Context Recall, Faithfulness 등 지표 측정
 - 평가 결과를 바탕으로 파이프라인 개선
 
-**코드 위치**: `backend/06_LLM_Evaluation/`
+**코드 위치**: `01_backend/06_LLM_Evaluation/`
 
 ---
 
@@ -335,21 +352,21 @@ curl -X POST http://localhost:8000/api/query \
   1. Linux Swap File (32GB) 설정으로 시스템 메모리 확보
   2. `gpu_memory_utilization` 파라미터 튜닝 (0.9 → 0.95)
   3. 모델 양자화(Quantization) 도입 검토
-- **상세 리포트**: [GCP 인스턴스 크래시 분석](./docs/troubleshooting/01_GCP_Instance_Crash.md)
+- **상세 리포트**: [GCP 인스턴스 크래시 분석](./04_docs/troubleshooting/01_GCP_Instance_Crash.md)
 
 ### 2. GPU VRAM 최적화 전략
 - **문제**: 긴 Context 처리 시 VRAM 부족으로 추론 속도 저하
 - **해결**:
   - PagedAttention 기술을 활용한 메모리 파편화 최소화
   - 배치 사이즈(Batch Size) 동적 조절
-- **상세 리포트**: [메모리 최적화 계획](./docs/troubleshooting/02_Memory_Optimization.md)
+- **상세 리포트**: [메모리 최적화 계획](./04_docs/troubleshooting/02_Memory_Optimization.md)
 
 ### 3. 대규모 데이터셋 품질 관리
 - **문제**: 3,700개 이상의 청크를 처리하며 평가 데이터셋 구축의 일관성 유지 어려움
 - **해결**:
   - 데이터셋을 Train/Validation/Test로 체계적으로 분할 (8:1:1)
   - 질문 유형(Keyword, Context, Abstract)별 균형 잡힌 샘플링 전략 수립
-- **상세 리포트**: [데이터셋 분할 전략](./docs/experiments/05_Dataset_Strategy.md)
+- **상세 리포트**: [데이터셋 분할 전략](./04_docs/experiments/05_Dataset_Strategy.md)
 
 ---
 
@@ -376,24 +393,24 @@ curl -X POST http://localhost:8000/api/query \
 
 ## 문서
 
-상세한 개발 과정과 실험 결과는 `docs/` 폴더를 참고하세요.
+상세한 개발 과정과 실험 결과는 `04_docs/` 폴더를 참고하세요.
 
 ### 실험 리포트 (Experiments)
-- [01. 청킹 전략 실험](./docs/experiments/01_Chunking_Strategy.md) - 구조 기반 vs 하이브리드 청킹 비교
-- [02. 임베딩 모델 벤치마크](./docs/experiments/02_Embedding_Benchmark.md) - 7개 모델 성능 비교 (BGE-m3 선정)
-- [03. 검색 전략 벤치마크](./docs/experiments/03_Retrieval_Benchmark.md) - Vector vs BM25 vs Hybrid 비교
-- [04. LLM 모델 선정](./docs/experiments/04_LLM_Selection.md) - 4개 한국어 LLM 성능 비교 (Bllossom-8B 선정)
-- [05. 데이터셋 전략](./docs/experiments/05_Dataset_Strategy.md) - 평가 데이터 구성 방법 (과적합 방지)
-- [06. 리랭커 벤치마크](./docs/experiments/06_Reranker_Benchmark.md) - 리랭커 적용 효과 분석
+- [01. 청킹 전략 실험](./04_docs/experiments/01_Chunking_Strategy.md) - 구조 기반 vs 하이브리드 청킹 비교
+- [02. 임베딩 모델 벤치마크](./04_docs/experiments/02_Embedding_Benchmark.md) - 7개 모델 성능 비교 (BGE-m3 선정)
+- [03. 검색 전략 벤치마크](./04_docs/experiments/03_Retrieval_Benchmark.md) - Vector vs BM25 vs Hybrid 비교
+- [04. LLM 모델 선정](./04_docs/experiments/04_LLM_Selection.md) - 4개 한국어 LLM 성능 비교 (Bllossom-8B 선정)
+- [05. 데이터셋 전략](./04_docs/experiments/05_Dataset_Strategy.md) - 평가 데이터 구성 방법 (과적합 방지)
+- [06. 리랭커 벤치마크](./04_docs/experiments/06_Reranker_Benchmark.md) - 리랭커 적용 효과 분석
 
 ### 트러블슈팅 (Troubleshooting)
-- [01. 인스턴스 크래시 해결](./docs/troubleshooting/01_GCP_Instance_Crash.md) - OOM 해결 과정
-- [02. 메모리 최적화](./docs/troubleshooting/02_Memory_Optimization.md) - VRAM 최적화 전략
+- [01. 인스턴스 크래시 해결](./04_docs/troubleshooting/01_GCP_Instance_Crash.md) - OOM 해결 과정
+- [02. 메모리 최적화](./04_docs/troubleshooting/02_Memory_Optimization.md) - VRAM 최적화 전략
 
 ### 프로젝트 문서
-- [RAG 시스템 현황](./docs/project_specs/RAG_SYSTEM_STATUS.md) - RAG 파이프라인 완성도 및 평가
-- [환경 설정 가이드](./docs/project_specs/README_REQUIREMENTS.md) - 상세한 설치 및 설정 방법
-- [프론트엔드 통합 보고서](./docs/project_specs/README_Frontend_Integration.md) - Frontend-Backend 연동 가이드
+- [RAG 시스템 현황](./04_docs/project_specs/RAG_SYSTEM_STATUS.md) - RAG 파이프라인 완성도 및 평가
+- [환경 설정 가이드](./04_docs/project_specs/README_REQUIREMENTS.md) - 상세한 설치 및 설정 방법
+- [프론트엔드 통합 보고서](./04_docs/project_specs/README_Frontend_Integration.md) - Frontend-Backend 연동 가이드
 
 ---
 
